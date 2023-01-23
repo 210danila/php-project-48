@@ -1,0 +1,13 @@
+{
+    "name": "hexlet/code",
+    "authors": [
+        {
+            "name": "210danila",
+            "email": "210danila@gmail.com"
+        }
+    ],
+    "bin": ["bin/gendiff"],
+    "require": {
+        "docopt/docopt": "^1.0"
+    }
+}
