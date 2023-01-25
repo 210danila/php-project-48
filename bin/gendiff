@@ -3,6 +3,8 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use function Differ\Differ\genDiff;
+
 $doc = <<<DOC
 Generate diff
 
@@ -16,6 +18,8 @@ Options:
   -v --version                  Show version
   --format <fmt>                Report format [default: stylish]
 DOC;
-$params = array('--format');
 
 $args = Docopt::handle($doc);
+
+print_r(genDiff($args["<firstFile>"], $args["<secondFile>"]));
+
