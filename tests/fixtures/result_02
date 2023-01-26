@@ -1,0 +1,10 @@
+
+{
+  - authenticator: true
+  - id: 1
+  + id: 2
+  - name: Vasya
+  + name: Dendi
+    status: online
+  + user-type: admin
+}
