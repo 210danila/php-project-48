@@ -1,0 +1,12 @@
+
+{
+  + accurate: good
+  + dog: false
+  - failed: true
+  - labor: word
+  - open: false
+  + open: true
+    raise: pink
+  - skin: 2
+  + skin: -2
+}

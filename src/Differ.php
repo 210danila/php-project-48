@@ -2,41 +2,53 @@
 
 namespace Differ\Differ;
 
+use function Differ\Parsers\parseJsonFile;
+use function Differ\Parsers\parseYamlFile;
+
+function getParsedData($pathToFile)
+{
+    $format = pathinfo($pathToFile, PATHINFO_EXTENSION);
+    switch ($format) {
+        case 'json':
+            return parseJsonFile($pathToFile);
+        case 'yaml':
+            return parseYamlFile($pathToFile);
+        default:
+            return false;
+    }
+}
+
+function convertToStrIfBool($value)
+{
+    if (is_bool($value)) {
+        return $value ? "true" : "false";
+    }
+    return $value;
+}
+
 function genDiff($pathToFile1, $pathToFile2)
 {
-    $getDataFromFile = function ($pathToFile) {
-        return json_decode(implode(
-            array_map(fn($line) => ltrim($line), file($pathToFile))
-        ), true);
-    };
-
-    $formatValueToString = function ($value) {
-        if (is_bool($value)) {
-            return $value ? "true" : "false";
-        }
-        return (string) $value;
-    };
-
-    $fileData1 = $getDataFromFile($pathToFile1);
-    $fileData2 = $getDataFromFile($pathToFile2);
-    $mergedData = array_merge($fileData1, $fileData2);
-    $mergedDataKeys = array_keys($mergedData);
+    $data1 = getParsedData($pathToFile1);
+    $data2 = getParsedData($pathToFile2);
+    $mergedDataKeys = array_keys(array_merge($data1, $data2));
     sort($mergedDataKeys);
 
     return array_reduce(
         $mergedDataKeys,
-        function ($diffAcc, $key) use ($fileData1, $fileData2, $mergedData, $formatValueToString) {
-            if (array_key_exists($key, $fileData1) && array_key_exists($key, $fileData2)) {
-                if ($fileData1[$key] === $fileData2[$key]) {
-                    return $diffAcc . "    " . (string) $key . ": " . $formatValueToString($mergedData[$key]) . "\n";
+        function ($diffAccum, $key) use ($data1, $data2) {
+            $element1 = convertToStrIfBool($data1[$key] ?? '');
+            $element2 = convertToStrIfBool($data2[$key] ?? '');
+
+            if (array_key_exists($key, $data1) && array_key_exists($key, $data2)) {
+                if ($data1[$key] === $data2[$key]) {
+                    return "{$diffAccum}    {$key}: {$element1}\n";
                 } else {
-                    return $diffAcc . "  - " . (string) $key . ": " . $formatValueToString($fileData1[$key]) . "\n" .
-                        "  + " . (string) $key . ": " . $formatValueToString($fileData2[$key]) . "\n";
+                    return "{$diffAccum}  - {$key}: {$element1}\n  + {$key}: {$element2}\n";
                 }
-            } elseif (array_key_exists($key, $fileData1)) {
-                return $diffAcc . "  - " . (string) $key . ": " . $formatValueToString($fileData1[$key]) . "\n";
+            } elseif (array_key_exists($key, $data1)) {
+                return "{$diffAccum}  - {$key}: {$element1}\n";
             } else {
-                return $diffAcc . "  + " . (string) $key . ": " . $formatValueToString($fileData2[$key]) . "\n";
+                return "{$diffAccum}  + {$key}: {$element2}\n";
             }
         },
         "\n{\n"
