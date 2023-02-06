@@ -11,7 +11,7 @@ function getParsedData($pathToFile)
     switch ($format) {
         case 'json':
             return parseJsonFile($pathToFile);
-        case 'yaml':
+        case 'yaml' || 'yml':
             return parseYamlFile($pathToFile);
         default:
             return false;

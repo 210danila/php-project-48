@@ -25,7 +25,7 @@ class DifferTest extends TestCase
         $this->assertEquals($expectedResult01, $actualResult01);
 
         $expectedResult02 = file_get_contents('tests/fixtures/result_02_yaml');
-        $actualResult02 = genDiff('tests/fixtures/before_02.yaml', 'tests/fixtures/after_02.yaml') . "\n";
+        $actualResult02 = genDiff('tests/fixtures/before_02.yml', 'tests/fixtures/after_02.yml') . "\n";
         $this->assertEquals($expectedResult02, $actualResult02);
 
     }
