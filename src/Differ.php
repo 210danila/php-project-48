@@ -4,6 +4,8 @@ namespace Differ\Differ;
 
 use function Differ\Parsers\parseJsonFile;
 use function Differ\Parsers\parseYamlFile;
+use function Differ\DiffFinder\createDiffTree;
+use function Differ\Stylish\makeOutputTree;
 
 function getParsedData($pathToFile)
 {
@@ -30,7 +32,12 @@ function genDiff($pathToFile1, $pathToFile2)
 {
     $data1 = getParsedData($pathToFile1);
     $data2 = getParsedData($pathToFile2);
-    $mergedDataKeys = array_keys(array_merge($data1, $data2));
+
+    $tree = createDiffTree($data1, $data2);
+    $stylisedTree = makeOutputTree($tree);
+    //var_dump($stylisedTree);
+    return $stylisedTree;
+    /*$mergedDataKeys = array_keys(array_merge($data1, $data2));
     sort($mergedDataKeys);
 
     return array_reduce(
@@ -52,5 +59,5 @@ function genDiff($pathToFile1, $pathToFile2)
             }
         },
         "\n{\n"
-    ) . "}";
+    ) . "}";*/
 }

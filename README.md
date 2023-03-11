@@ -9,3 +9,6 @@ Asciinema with json file:
 
 Asciinema with yaml file:
 [![asciicast](https://asciinema.org/a/5ISVvBWpwINadV7hXZa2y9B0k.svg)](https://asciinema.org/a/5ISVvBWpwINadV7hXZa2y9B0k)
+
+Asciinema with json file of nested structure
+[![asciicast](https://asciinema.org/a/0HULgPc0SRMgqQyIC2T7QyP1b.svg)](https://asciinema.org/a/0HULgPc0SRMgqQyIC2T7QyP1b)
