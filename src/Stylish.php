@@ -17,13 +17,14 @@ function convertToStrIfBool($value)
 {
     if (is_bool($value)) {
         return $value ? "true" : "false";
-    } elseif(is_null($value)) {
+    } elseif (is_null($value)) {
         return 'null';
     }
     return $value;
 }
 
-function stylishArray(array $array, int $depth) {
+function stylishArray(array $array, int $depth)
+{
     ksort($array);
 
     $stylishedArray = implode("\n", array_map(function ($key) use ($array, $depth) {
