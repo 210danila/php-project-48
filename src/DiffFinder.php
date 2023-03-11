@@ -2,7 +2,7 @@
 
 namespace Differ\DiffFinder;
 
-function createDiffTree($diffData1, $diffData2) 
+function createDiffTree($diffData1, $diffData2)
 {
     $diffTree = [
         'key' => '',
@@ -80,7 +80,7 @@ function iteration(array $beforeElement, array $afterElement, int $depth = 1)
             $beforeValue = $beforeElement[$key];
             $afterValue = $afterElement[$key];
             return handleBothElements($key, $beforeValue, $afterValue, $depth);
-        } elseif (array_key_exists($key, $beforeElement)){
+        } elseif (array_key_exists($key, $beforeElement)) {
             $beforeValue = $beforeElement[$key];
             return handleBeforeElement($key, $beforeValue, $depth);
         } else {
