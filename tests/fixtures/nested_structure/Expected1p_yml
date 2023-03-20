@@ -1,0 +1,8 @@
+Property 'review.arrangement.tightly' was removed
+Property 'review.correctly' was updated. From true to 'no'
+Property 'review.cors' was removed
+Property 'review.man' was updated. From true to [complex value]
+Property 'review.new.first' was removed
+Property 'review.new.ie' was added with value: null
+Property 'review.new.last' was updated. From 'last' to 'sans'
+Property 'sort' was updated. From 'over' to [complex value]

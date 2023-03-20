@@ -1,0 +1,28 @@
+
+{
+    clear: beyond
+    review: {
+        arrangement: {
+            belong: -10
+          - tightly: soon
+        }
+      - correctly: true
+      + correctly: no
+      - cors: 7.8
+        hit: growth
+      - man: true
+      + man: {
+            no: fix
+        }
+        new: {
+          - first: null
+          + ie: null
+          - last: last
+          + last: sans
+        }
+    }
+  - sort: over
+  + sort: {
+        key: value
+    }
+}

@@ -11,8 +11,10 @@
         "files": [
             "src/Differ.php",
             "src/Parsers.php",
-            "src/DiffFinder.php",
-            "src/Stylish.php"
+            "src/DiffGenerator.php",
+            "src/Formatters.php",
+            "src/Formatters/Stylish.php",
+            "src/Formatters/Plain.php"
         ]
     },
     "require": {
