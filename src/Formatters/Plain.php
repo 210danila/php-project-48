@@ -35,10 +35,7 @@ function iteration(array $diffNode, string $actualPath)
         case 'equal':
             $identialValue = $diffNode['identialValue'];
             if (is_array($identialValue)) {
-                return array_map(
-                    fn($childNode) => iteration($childNode, $propertyPath),
-                    $identialValue
-                );
+                return array_map(fn($childNode) => iteration($childNode, $propertyPath), $identialValue);
             }
             return '';
 
@@ -56,6 +53,6 @@ function iteration(array $diffNode, string $actualPath)
             return "Property '{$propertyPath}' was removed";
 
         default:
-            return false;
+            return "Error: there is no status with the such name.";
     }
 }

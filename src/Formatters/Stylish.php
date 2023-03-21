@@ -51,30 +51,17 @@ function stylishArray(array $array, int $depth)
     return $stylishedArray;
 }
 
-function handleRemovedValue(mixed $value, $property, $depth)
+function handleRemovedOrAddedValue(mixed $value, string $property, int $depth, string $sign)
 {
     $prefix = createPrefix($depth - 1);
 
     if (is_array($value)) {
         $stylishedValue = stylishArray($value, $depth + 1);
-        return "{$prefix}  - {$property}: {\n{$stylishedValue}\n{$prefix}    }";
+        return "{$prefix}  {$sign} {$property}: {\n{$stylishedValue}\n{$prefix}    }";
     }
 
     $stylishedValue = formatValue($value);
-    return rtrim("{$prefix}  - {$property}: {$stylishedValue}");
-}
-
-function handleAddedValue(mixed $value, string $property, int $depth)
-{
-    $prefix = createPrefix($depth - 1);
-
-    if (is_array($value)) {
-        $stylishedValue = stylishArray($value, $depth + 1);
-        return "{$prefix}  + {$property}: {\n{$stylishedValue}\n{$prefix}    }";
-    }
-
-    $stylishedValue = formatValue($value);
-    return rtrim("{$prefix}  + {$property}: {$stylishedValue}");
+    return rtrim("{$prefix}  {$sign} {$property}: {$stylishedValue}");
 }
 
 function handleIdentialValue(mixed $value, string $property, int $depth)
@@ -104,16 +91,16 @@ function iteration(array $diffNode)
             return handleIdentialValue($diffNode['identialValue'], $property, $depth);
 
         case 'updated':
-            return handleRemovedValue($diffNode['removedValue'], $property, $depth) . "\n" .
-                handleAddedValue($diffNode['addedValue'], $property, $depth);
+            return handleRemovedOrAddedValue($diffNode['removedValue'], $property, $depth, '-') . "\n" .
+                handleRemovedOrAddedValue($diffNode['addedValue'], $property, $depth, '+');
 
         case 'added':
-            return handleAddedValue($diffNode['addedValue'], $property, $depth);
+            return handleRemovedOrAddedValue($diffNode['addedValue'], $property, $depth, '+');
 
         case 'removed':
-            return handleRemovedValue($diffNode['removedValue'], $property, $depth);
+            return handleRemovedOrAddedValue($diffNode['removedValue'], $property, $depth, '-');
 
         default:
-            return false;
+            return "Error: there is no status with the such name.";
     }
 }

@@ -25,6 +25,11 @@ class DifferTest extends TestCase
         return "tests/fixtures/nested_structure/{$fixtureName}";
     }
 
+    public function getNestedExpectedFixturePath(string $fixtureName)
+    {
+        return "tests/fixtures/nested_structure/expected/{$fixtureName}";
+    }
+
     /**
      * @dataProvider extensionProvider
      */
@@ -50,16 +55,16 @@ class DifferTest extends TestCase
     /**
      * @dataProvider extensionProvider
      */
-    public function testGenDiffWithNestedStructure($extension): void
+    public function testGenDiffWithStylishFormat($extension): void
     {
         $nestedTestsCount = 10;
 
         for ($testCounter = 1; $testCounter <= $nestedTestsCount; $testCounter++) {
-            if (!is_file($this->getNestedFixturePath("Expected{$testCounter}_{$extension}"))) {
+            if (!is_file($this->getNestedExpectedFixturePath("StylishFmt{$testCounter}_{$extension}"))) {
                 continue;
             }
 
-            $expectedFilePath = $this->getNestedFixturePath("Expected{$testCounter}_{$extension}");
+            $expectedFilePath = $this->getNestedExpectedFixturePath("StylishFmt{$testCounter}_{$extension}");
             $beforeFilePath = $this->getNestedFixturePath("Before{$testCounter}.{$extension}");
             $afterFilePath = $this->getNestedFixturePath("After{$testCounter}.{$extension}");
 
@@ -78,11 +83,11 @@ class DifferTest extends TestCase
         $nestedTestsCount = 10;
 
         for ($testCounter = 1; $testCounter <= $nestedTestsCount; $testCounter++) {
-            if (!is_file($this->getNestedFixturePath("Expected{$testCounter}p_{$extension}"))) {
+            if (!is_file($this->getNestedExpectedFixturePath("PlainFmt{$testCounter}_{$extension}"))) {
                 continue;
             }
 
-            $expectedFilePath = $this->getNestedFixturePath("Expected{$testCounter}p_{$extension}");
+            $expectedFilePath = $this->getNestedExpectedFixturePath("PlainFmt{$testCounter}_{$extension}");
             $beforeFilePath = $this->getNestedFixturePath("Before{$testCounter}.{$extension}");
             $afterFilePath = $this->getNestedFixturePath("After{$testCounter}.{$extension}");
 
@@ -90,5 +95,17 @@ class DifferTest extends TestCase
             $actual= genDiff($beforeFilePath, $afterFilePath, $format);
             $this->assertEquals($expected, $actual);
         }
+    }
+
+    public function testGenDiffWithJsonFormat(): void
+    {
+        $format = 'json';
+        $expectedFilePath = $this->getNestedExpectedFixturePath("JsonFmt1.json");
+        $beforeFilePath = $this->getNestedFixturePath("Before1.json");
+        $afterFilePath = $this->getNestedFixturePath("After1.json");
+
+        $expected = implode(array_map(fn($line) => ltrim($line), file($expectedFilePath)));
+        $actual = genDiff($beforeFilePath, $afterFilePath, $format);
+        $this->assertEquals(json_decode($expected, true), json_decode($actual, true));
     }
 }
