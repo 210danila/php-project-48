@@ -20,7 +20,7 @@
     },
     "require": {
         "docopt/docopt": "^1.0",
-        "symfony/yaml": "^6.2",
+        "symfony/yaml": "5.4",
         "tightenco/collect": "^9.52"
     },
     "require-dev": {
