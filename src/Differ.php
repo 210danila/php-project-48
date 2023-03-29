@@ -2,23 +2,9 @@
 
 namespace Differ\Differ;
 
-use function Differ\Parsers\parseJsonFile;
-use function Differ\Parsers\parseYamlFile;
+use function Differ\Parsers\getParsedData;
 use function Differ\DiffGenerator\generateDiffTree;
 use function Differ\Formatters\formatDiffTree;
-
-function getParsedData(string $filePath)
-{
-    $format = pathinfo($filePath, PATHINFO_EXTENSION);
-    switch ($format) {
-        case 'json':
-            return parseJsonFile($filePath);
-        case 'yaml' || 'yml':
-            return parseYamlFile($filePath);
-        default:
-            return false;
-    }
-}
 
 function genDiff(string $filePath1, string $filePath2, string $formatName = 'stylish')
 {

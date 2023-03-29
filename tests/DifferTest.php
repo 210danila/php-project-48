@@ -14,42 +14,43 @@ class DifferTest extends TestCase
             ['yml']
         ];
     }
+    public function flatFilesProvider()
+    {
+        return [
+            ['Before1.json', 'After1.json', 'Expected1_json'],
+            ['Before1.yml', 'After1.yml', 'Expected1_yml'],
+            ['Before2.json', 'After2.json', 'Expected2_json'],
+            ['Before2.yml', 'After2.yml', 'Expected2_yml']
+        ];
+    }
 
     public function getFlatFixturePath(string $fixtureName)
     {
-        return "tests/fixtures/flat_structure/{$fixtureName}";
+        return __DIR__ . "/fixtures/flat_structure/{$fixtureName}";
     }
 
     public function getNestedFixturePath(string $fixtureName)
     {
-        return "tests/fixtures/nested_structure/{$fixtureName}";
+        return __DIR__ . "/fixtures/nested_structure/{$fixtureName}";
     }
 
     public function getNestedExpectedFixturePath(string $fixtureName)
     {
-        return "tests/fixtures/nested_structure/expected/{$fixtureName}";
+        return __DIR__ . "/fixtures/nested_structure/expected/{$fixtureName}";
     }
 
     /**
-     * @dataProvider extensionProvider
+     * @dataProvider flatFilesProvider
      */
-    public function testGenDiffWithFlatStructure($extension): void
+    public function testGenDiffWithFlatStructure($beforeFileName, $afterFileName, $expectedFileName): void
     {
-        $flatTestsCount = 10;
+        $beforeFilePath = $this->getFlatFixturePath($beforeFileName);
+        $afterFilePath = $this->getFlatFixturePath($afterFileName);
+        $expectedFilePath = $this->getFlatFixturePath($expectedFileName);
 
-        for ($testCounter = 1; $testCounter <= $flatTestsCount; $testCounter++) {
-            if (!is_file($this->getFlatFixturePath("Expected{$testCounter}_{$extension}"))) {
-                continue;
-            }
-
-            $expectedFilePath = $this->getFlatFixturePath("Expected{$testCounter}_{$extension}");
-            $beforeFilePath = $this->getFlatFixturePath("Before{$testCounter}.{$extension}");
-            $afterFilePath = $this->getFlatFixturePath("After{$testCounter}.{$extension}");
-
-            $expected = file_get_contents($expectedFilePath);
-            $actual = genDiff($beforeFilePath, $afterFilePath);
-            $this->assertEquals($expected, $actual);
-        }
+        $expected = file_get_contents($expectedFilePath);
+        $actual = genDiff($beforeFilePath, $afterFilePath);
+        $this->assertEquals($expected, $actual);
     }
 
     /**
@@ -57,21 +58,13 @@ class DifferTest extends TestCase
      */
     public function testGenDiffWithStylishFormat($extension): void
     {
-        $nestedTestsCount = 10;
+        $format = "stylish";
+        $expectedFilePath = $this->getNestedExpectedFixturePath("StylishFmt1_{$extension}");
+        $beforeFilePath = $this->getNestedFixturePath("Before1.{$extension}");
+        $afterFilePath = $this->getNestedFixturePath("After1.{$extension}");
 
-        for ($testCounter = 1; $testCounter <= $nestedTestsCount; $testCounter++) {
-            if (!is_file($this->getNestedExpectedFixturePath("StylishFmt{$testCounter}_{$extension}"))) {
-                continue;
-            }
-
-            $expectedFilePath = $this->getNestedExpectedFixturePath("StylishFmt{$testCounter}_{$extension}");
-            $beforeFilePath = $this->getNestedFixturePath("Before{$testCounter}.{$extension}");
-            $afterFilePath = $this->getNestedFixturePath("After{$testCounter}.{$extension}");
-
-            $expected = file_get_contents($expectedFilePath);
-            $actual= genDiff($beforeFilePath, $afterFilePath);
-            $this->assertEquals($expected, $actual);
-        }
+        $actual= genDiff($beforeFilePath, $afterFilePath, $format);
+        $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
     /**
@@ -80,21 +73,12 @@ class DifferTest extends TestCase
     public function testGenDiffWithPlainFormat($extension): void
     {
         $format = 'plain';
-        $nestedTestsCount = 10;
+        $expectedFilePath = $this->getNestedExpectedFixturePath("PlainFmt1_{$extension}");
+        $beforeFilePath = $this->getNestedFixturePath("Before1.{$extension}");
+        $afterFilePath = $this->getNestedFixturePath("After1.{$extension}");
 
-        for ($testCounter = 1; $testCounter <= $nestedTestsCount; $testCounter++) {
-            if (!is_file($this->getNestedExpectedFixturePath("PlainFmt{$testCounter}_{$extension}"))) {
-                continue;
-            }
-
-            $expectedFilePath = $this->getNestedExpectedFixturePath("PlainFmt{$testCounter}_{$extension}");
-            $beforeFilePath = $this->getNestedFixturePath("Before{$testCounter}.{$extension}");
-            $afterFilePath = $this->getNestedFixturePath("After{$testCounter}.{$extension}");
-
-            $expected= file_get_contents($expectedFilePath);
-            $actual= genDiff($beforeFilePath, $afterFilePath, $format);
-            $this->assertEquals($expected, $actual);
-        }
+        $actual= genDiff($beforeFilePath, $afterFilePath, $format);
+        $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
     public function testGenDiffWithJsonFormat(): void
