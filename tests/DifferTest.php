@@ -3,6 +3,7 @@
 namespace Differ\Tests\DifferTest;
 
 use PHPUnit\Framework\TestCase;
+
 use function Differ\Differ\genDiff;
 
 class DifferTest extends TestCase
@@ -65,7 +66,7 @@ class DifferTest extends TestCase
         $beforeFilePath = $this->getNestedFixturePath("Before{$fileNumber}.{$extension}");
         $afterFilePath = $this->getNestedFixturePath("After{$fileNumber}.{$extension}");
 
-        $actual= genDiff($beforeFilePath, $afterFilePath, $format);
+        $actual = genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
@@ -79,7 +80,7 @@ class DifferTest extends TestCase
         $beforeFilePath = $this->getNestedFixturePath("Before{$fileNumber}.{$extension}");
         $afterFilePath = $this->getNestedFixturePath("After{$fileNumber}.{$extension}");
 
-        $actual= genDiff($beforeFilePath, $afterFilePath, $format);
+        $actual = genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
