@@ -19,10 +19,16 @@ function getParsedData(string $filePath)
 
         case 'yaml':
             $yamlData = file_get_contents($filePath);
+            if (is_bool($yamlData)) {
+                return false;
+            }
             return parseYamlString($yamlData);
 
         case 'yml':
             $yamlData = file_get_contents($filePath);
+            if (is_bool($yamlData)) {
+                return false;
+            }
             return parseYamlString($yamlData);
 
         default:
