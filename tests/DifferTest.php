@@ -7,11 +7,13 @@ use function Differ\Differ\genDiff;
 
 class DifferTest extends TestCase
 {
-    public function extensionProvider()
+    public function nestedFilesProvider()
     {
         return [
-            ['json'],
-            ['yml']
+            [1, 'json'],
+            [1, 'yml'],
+            [2, 'json'],
+            [2, 'yml']
         ];
     }
     public function flatFilesProvider()
@@ -54,28 +56,28 @@ class DifferTest extends TestCase
     }
 
     /**
-     * @dataProvider extensionProvider
+     * @dataProvider nestedFilesProvider
      */
-    public function testGenDiffWithStylishFormat($extension): void
+    public function testGenDiffWithStylishFormat($fileNumber, $extension): void
     {
         $format = "stylish";
-        $expectedFilePath = $this->getNestedExpectedFixturePath("StylishFmt1_{$extension}");
-        $beforeFilePath = $this->getNestedFixturePath("Before1.{$extension}");
-        $afterFilePath = $this->getNestedFixturePath("After1.{$extension}");
+        $expectedFilePath = $this->getNestedExpectedFixturePath("StylishFmt{$fileNumber}_{$extension}");
+        $beforeFilePath = $this->getNestedFixturePath("Before{$fileNumber}.{$extension}");
+        $afterFilePath = $this->getNestedFixturePath("After{$fileNumber}.{$extension}");
 
         $actual= genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
     /**
-     * @dataProvider extensionProvider
+     * @dataProvider nestedFilesProvider
      */
-    public function testGenDiffWithPlainFormat($extension): void
+    public function testGenDiffWithPlainFormat($fileNumber, $extension): void
     {
         $format = 'plain';
-        $expectedFilePath = $this->getNestedExpectedFixturePath("PlainFmt1_{$extension}");
-        $beforeFilePath = $this->getNestedFixturePath("Before1.{$extension}");
-        $afterFilePath = $this->getNestedFixturePath("After1.{$extension}");
+        $expectedFilePath = $this->getNestedExpectedFixturePath("PlainFmt{$fileNumber}_{$extension}");
+        $beforeFilePath = $this->getNestedFixturePath("Before{$fileNumber}.{$extension}");
+        $afterFilePath = $this->getNestedFixturePath("After{$fileNumber}.{$extension}");
 
         $actual= genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertStringEqualsFile($expectedFilePath, $actual);

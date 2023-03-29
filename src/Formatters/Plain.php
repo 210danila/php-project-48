@@ -21,6 +21,8 @@ function formatValue(mixed $value)
         return "null";
     } elseif (is_array($value)) {
         return '[complex value]';
+    } elseif (is_int($value)) {
+        return "{$value}";
     }
     return "'{$value}'";
 }

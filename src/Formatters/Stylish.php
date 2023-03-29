@@ -11,7 +11,7 @@ function createStylishedOutput(array $diffTree)
         fn($rootChild) => iteration($rootChild),
         $rootChildren
     );
-    $stylishedTree = "\n{\n" . implode("\n", $stylishedRootChildren) . "\n}";
+    $stylishedTree = "{\n" . implode("\n", $stylishedRootChildren) . "\n}";
     return $stylishedTree;
 }
 
@@ -61,7 +61,7 @@ function handleRemovedOrAddedValue(mixed $value, string $property, int $depth, s
     }
 
     $stylishedValue = formatValue($value);
-    return rtrim("{$prefix}  {$sign} {$property}: {$stylishedValue}");
+    return "{$prefix}  {$sign} {$property}: {$stylishedValue}";
 }
 
 function handleIdentialValue(mixed $value, string $property, int $depth)
@@ -77,7 +77,7 @@ function handleIdentialValue(mixed $value, string $property, int $depth)
     }
 
     $stylishedValue = formatValue($value);
-    return rtrim("{$prefix}{$property}: {$stylishedValue}");
+    return "{$prefix}{$property}: {$stylishedValue}";
 }
 
 function iteration(array $diffNode)
