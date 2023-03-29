@@ -28,7 +28,7 @@ function generateDiffNode(string $property, int $depth, array $values, string $s
     return $diffNode;
 }
 
-function handleBothElements(string $property, $beforeValue, $afterValue, $depth)
+function handleBothElements(string $property, mixed $beforeValue, mixed $afterValue, int $depth)
 {
     [$isBeforeValueArray, $isAfterValueArray] = [is_array($beforeValue), is_array($afterValue)];
 
@@ -48,7 +48,7 @@ function handleBothElements(string $property, $beforeValue, $afterValue, $depth)
     return $diffNode;
 }
 
-function handleBeforeElement($property, $beforeValue, $depth)
+function handleBeforeElement(string $property, mixed $beforeValue, int $depth)
 {
     $diffNode = [
         'property' => $property,
@@ -59,7 +59,7 @@ function handleBeforeElement($property, $beforeValue, $depth)
     return $diffNode;
 }
 
-function handleAfterElement($property, $afterValue, $depth)
+function handleAfterElement(string $property, mixed $afterValue, int $depth)
 {
     $diffNode = [
         'property' => $property,

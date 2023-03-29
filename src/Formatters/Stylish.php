@@ -25,7 +25,7 @@ function formatValue(mixed $value)
     return $value;
 }
 
-function createPrefix($depth)
+function createPrefix(int $depth)
 {
     return str_repeat(INDENT, $depth);
 }
