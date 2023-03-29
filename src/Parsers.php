@@ -10,10 +10,18 @@ function getParsedData(string $filePath)
 
     switch ($format) {
         case 'json':
-            $jsonData = implode(array_map(fn($line) => ltrim($line), file($filePath)));
+            $fileContent = file($filePath);
+            if (is_bool($fileContent)) {
+                return false;
+            }
+            $jsonData = implode(array_map(fn($line) => ltrim($line), $fileContent));
             return parseJsonString($jsonData);
 
-        case 'yaml' || 'yml':
+        case 'yaml':
+            $yamlData = file_get_contents($filePath);
+            return parseYamlString($yamlData);
+
+        case 'yml':
             $yamlData = file_get_contents($filePath);
             return parseYamlString($yamlData);
 
