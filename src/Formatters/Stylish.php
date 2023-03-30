@@ -32,11 +32,11 @@ function createPrefix(int $depth)
 
 function stylishArray(array $array, int $depth)
 {
-    ksort($array);
+    $sortedArray = collect($array)->sortKeys()->toArray();
 
-    $stylishedArray = collect(array_keys($array))
-        ->map(function ($key) use ($array, $depth) {
-            $value = $array[$key];
+    $stylishedArray = collect(array_keys($sortedArray))
+        ->map(function ($key) use ($sortedArray, $depth) {
+            $value = $sortedArray[$key];
             $prefix = createPrefix($depth);
 
             if (is_array($value)) {
