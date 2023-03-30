@@ -11,28 +11,18 @@ function createJsonOutput(array $diffTree)
 
 function createJsonNode(string $status, array $values)
 {
-    $node = [
-        "status" => $status,
-    ];
-
     switch ($status) {
         case 'removed':
-            $node['removedValue'] = $values['removed'];
-            break;
+            return ["status" => $status, 'removedValue' => $values['removed']];
         case 'added':
-            $node['addedValue'] = $values['added'];
-            break;
+            return ["status" => $status, 'addedValue' => $values['added']];
         case 'updated':
-            $node['removedValue'] = $values['removed'];
-            $node['addedValue'] = $values['added'];
-            break;
+            return ["status" => $status, 'removedValue' => $values['removed'], 'addedValue' => $values['added']];
         case 'equal':
-            $node['identialValue'] = $values['idential'];
-            break;
+            return ["status" => $status, 'identialValue' => $values['idential']];
         default:
             return "Error: there is no status with the such name.";
     }
-    return $node;
 }
 
 function handleIdentialArray(array $identialArray)

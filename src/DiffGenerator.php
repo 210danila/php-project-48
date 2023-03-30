@@ -32,48 +32,55 @@ function handleBothElements(string $property, mixed $beforeValue, mixed $afterVa
 {
     [$isBeforeValueArray, $isAfterValueArray] = [is_array($beforeValue), is_array($afterValue)];
 
-    $diffNode = ['property' => $property, 'depth' => $depth];
     if ($isBeforeValueArray && $isAfterValueArray) {
-        $diffNode['status'] = 'equal';
-        $diffNode['identialValue'] = iteration($beforeValue, $afterValue, $depth + 1);
+        return [
+            'property' => $property,
+            'depth' => $depth,
+            'status' => 'equal',
+            'identialValue' => iteration($beforeValue, $afterValue, $depth + 1)
+        ];
     } elseif (!$isBeforeValueArray && !$isAfterValueArray && $beforeValue === $afterValue) {
-        $diffNode['status'] = 'equal';
-        $diffNode['identialValue'] = $beforeValue;
+        return [
+            'property' => $property,
+            'depth' => $depth,
+            'status' => 'equal',
+            'identialValue' => $beforeValue
+        ];
     } else {
-        $diffNode['status'] = 'updated';
-        $diffNode['removedValue'] = $beforeValue;
-        $diffNode['addedValue'] = $afterValue;
+        return [
+            'property' => $property,
+            'depth' => $depth,
+            'status' => 'updated',
+            'removedValue' => $beforeValue,
+            'addedValue' => $afterValue
+        ];
     }
-
-    return $diffNode;
 }
 
 function handleBeforeElement(string $property, mixed $beforeValue, int $depth)
 {
-    $diffNode = [
+    return [
         'property' => $property,
         'depth' => $depth,
         'status' => 'removed',
         'removedValue' => $beforeValue
     ];
-    return $diffNode;
 }
 
 function handleAfterElement(string $property, mixed $afterValue, int $depth)
 {
-    $diffNode = [
+    return  [
         'property' => $property,
         'depth' => $depth,
         'status' => 'added',
         'addedValue' => $afterValue
     ];
-    return $diffNode;
 }
 
 function iteration(array $beforeElement, array $afterElement, int $depth = 1)
 {
     $mergedDataKeys = array_keys(array_merge($beforeElement, $afterElement));
-    sort($mergedDataKeys);
+    $sortedMergedDataKeys = collect($mergedDataKeys)->sort()->toArray();
 
     $resultElement = array_map(function ($property) use ($beforeElement, $afterElement, $depth) {
         if (array_key_exists($property, $beforeElement) && array_key_exists($property, $afterElement)) {
@@ -87,6 +94,6 @@ function iteration(array $beforeElement, array $afterElement, int $depth = 1)
             $afterValue = $afterElement[$property];
             return handleAfterElement($property, $afterValue, $depth);
         }
-    }, $mergedDataKeys);
+    }, $sortedMergedDataKeys);
     return $resultElement;
 }
