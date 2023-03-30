@@ -29,8 +29,8 @@ function handleIdentialArray(array $identialArray)
 {
     return array_reduce($identialArray, function ($resultArray, $childNode) {
         $property = $childNode['property'];
-        $resultArray[$property] = iteration($childNode);
-        return $resultArray;
+        $newResultArray = array_merge([$property => iteration($childNode)], $resultArray);
+        return $newResultArray;
     }, []);
 }
 
