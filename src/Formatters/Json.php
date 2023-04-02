@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters\Json;
 
-function createJsonOutput(array $diffTree)
+function createOutput(array $diffTree)
 {
     $rootChildren = $diffTree['children'];
     $jsonTree = json_encode(handleIdentialArray($rootChildren));

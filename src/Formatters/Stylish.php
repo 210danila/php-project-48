@@ -4,7 +4,7 @@ namespace Differ\Formatters\Stylish;
 
 const INDENT = '    ';
 
-function createStylishedOutput(array $diffTree)
+function createOutput(array $diffTree)
 {
     $rootChildren = $diffTree['children'];
     $stylishedRootChildren = array_map(

@@ -5,27 +5,11 @@ namespace Differ\DiffGenerator;
 function generateDiffTree(array $diffData1, array $diffData2)
 {
     $diffTree = [
-        'property' => '',
+        'status' => 'root',
         'depth' => 0,
         'children' => iteration($diffData1, $diffData2, 1)
     ];
     return $diffTree;
-}
-
-function generateDiffNode(string $property, int $depth, array $values, string $status)
-{
-    $diffNode = [
-        'property' => $property,
-        'depth' => $depth,
-        'status' => $status,
-        'removedValue' => array_key_exists('removeElement', $values) ?
-            $values['removeElement'] : null,
-        'addedValue' => array_key_exists('addElement', $values) ?
-            $values['addElement'] : null,
-        'identialValue' => array_key_exists('identialElement', $values) ?
-            $values['identialElement'] : null
-    ];
-    return $diffNode;
 }
 
 function handleBothElements(string $property, mixed $beforeValue, mixed $afterValue, int $depth)

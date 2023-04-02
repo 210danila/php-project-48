@@ -2,19 +2,15 @@
 
 namespace Differ\Formatters;
 
-use function Differ\Formatters\Json\createJsonOutput;
-use function Differ\Formatters\Plain\createPlainOutput;
-use function Differ\Formatters\Stylish\createStylishedOutput;
-
 function formatDiffTree(array $diffTree, string $formatName)
 {
     switch ($formatName) {
         case 'stylish':
-            return createStylishedOutput($diffTree);
+            return \Differ\Formatters\Stylish\createOutput($diffTree);
         case 'plain':
-            return createPlainOutput($diffTree);
+            return \Differ\Formatters\Plain\createOutput($diffTree);
         case 'json':
-            return createJsonOutput($diffTree);
+            return \Differ\Formatters\Json\createOutput($diffTree);
         default:
             return "Error: There is no format called {$formatName}.";
     }

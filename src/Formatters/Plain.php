@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters\Plain;
 
-function createPlainOutput(array $diffTree)
+function createOutput(array $diffTree)
 {
     $rootChildren = $diffTree['children'];
     $plainTree = collect($rootChildren)
