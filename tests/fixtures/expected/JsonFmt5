@@ -1,13 +1,13 @@
 {
     "common": {
-        "status": "equal",
-        "identialValue": {
+        "status": "bothValuesAreArrays",
+        "arrayValue": {
             "follow": {
                 "status": "added",
                 "addedValue": false
             },
             "setting1": {
-                "status": "equal",
+                "status": "identialValues",
                 "identialValue": "Value 1"
             },
             "setting2": {
@@ -30,11 +30,11 @@
                 }
             },
             "setting6": {
-                "status": "equal",
-                "identialValue": {
+                "status": "bothValuesAreArrays",
+                "arrayValue": {
                     "doge": {
-                        "status": "equal",
-                        "identialValue": {
+                        "status": "bothValuesAreArrays",
+                        "arrayValue": {
                             "wow": {
                                 "status": "updated",
                                 "removedValue": "",
@@ -43,7 +43,7 @@
                         }
                     },
                     "key": {
-                        "status": "equal",
+                        "status": "identialValues",
                         "identialValue": "value"
                     },
                     "ops": {
@@ -55,15 +55,15 @@
         }
     },
     "group1": {
-        "status": "equal",
-        "identialValue": {
+        "status": "bothValuesAreArrays",
+        "arrayValue": {
             "baz": {
                 "status": "updated",
                 "removedValue": "bas",
                 "addedValue": "bars"
             },
             "foo": {
-                "status": "equal",
+                "status": "identialValues",
                 "identialValue": "bar"
             },
             "nest": {

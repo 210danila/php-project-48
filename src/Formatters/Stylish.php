@@ -64,20 +64,23 @@ function handleRemovedOrAddedValue(mixed $value, string $property, int $depth, s
     return "{$prefix}  {$sign} {$property}: {$stylishedValue}";
 }
 
-function handleIdentialValue(mixed $value, string $property, int $depth)
+function handleIdentialValues(mixed $value, string $property, int $depth)
 {
     $prefix = createPrefix($depth);
 
-    if (is_array($value)) {
-        $stylishedValue = implode("\n", array_map(
-            fn($child) => iteration($child),
-            $value
-        ));
-        return "{$prefix}{$property}: {\n{$stylishedValue}\n{$prefix}}";
-    }
-
     $stylishedValue = formatValue($value);
     return "{$prefix}{$property}: {$stylishedValue}";
+}
+
+function handleArrayValue(mixed $value, string $property, int $depth)
+{
+    $prefix = createPrefix($depth);
+
+    $stylishedValue = implode("\n", array_map(
+        fn($child) => iteration($child),
+        $value
+    ));
+    return "{$prefix}{$property}: {\n{$stylishedValue}\n{$prefix}}";
 }
 
 function iteration(array $diffNode)
@@ -87,8 +90,11 @@ function iteration(array $diffNode)
     $status = $diffNode['status'];
 
     switch ($status) {
-        case 'equal':
-            return handleIdentialValue($diffNode['identialValue'], $property, $depth);
+        case 'identialValues':
+            return handleIdentialValues($diffNode['identialValue'], $property, $depth);
+
+        case 'bothValuesAreArrays':
+            return handleArrayValue($diffNode['arrayValue'], $property, $depth);
 
         case 'updated':
             return handleRemovedOrAddedValue($diffNode['removedValue'], $property, $depth, '-') . "\n" .

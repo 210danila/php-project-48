@@ -5,7 +5,7 @@ namespace Differ\Formatters\Json;
 function createOutput(array $diffTree)
 {
     $rootChildren = $diffTree['children'];
-    $jsonTree = json_encode(handleIdentialArray($rootChildren));
+    $jsonTree = json_encode(handleArrayValue($rootChildren));
     return $jsonTree;
 }
 
@@ -14,18 +14,25 @@ function createJsonNode(string $status, array $values)
     switch ($status) {
         case 'removed':
             return ["status" => $status, 'removedValue' => $values['removed']];
+
         case 'added':
             return ["status" => $status, 'addedValue' => $values['added']];
+
         case 'updated':
             return ["status" => $status, 'removedValue' => $values['removed'], 'addedValue' => $values['added']];
-        case 'equal':
-            return ["status" => $status, 'identialValue' => $values['idential']];
+
+        case 'bothValuesAreArrays':
+            return ["status" => $status, 'arrayValue' => $values['arrayValue']];
+
+        case 'identialValues':
+            return ["status" => $status, 'identialValue' => $values['identialValue']];
+
         default:
             return "Error: there is no status with the such name.";
     }
 }
 
-function handleIdentialArray(array $identialArray)
+function handleArrayValue(array $identialArray)
 {
     return array_reduce($identialArray, function ($resultArray, $childNode) {
         $property = $childNode['property'];
@@ -38,17 +45,17 @@ function iteration(array $diffNode)
 {
     $status = $diffNode['status'];
 
-    if ($status === "equal" && is_array($diffNode['identialValue'])) {
+    if ($status === "bothValuesAreArrays") {
         return [
-            'status' => 'equal',
-            'identialValue' => handleIdentialArray($diffNode['identialValue'])
+            'status' => 'bothValuesAreArrays',
+            'arrayValue' => handleArrayValue($diffNode['arrayValue'])
         ];
     }
 
     $jsonNode = createJsonNode($status, [
         "added" => $diffNode['addedValue'] ?? null,
         "removed" => $diffNode['removedValue'] ?? null,
-        "idential" => $diffNode['identialValue'] ?? null
+        "identialValue" => $diffNode['identialValue'] ?? null
     ]);
     return $jsonNode;
 }

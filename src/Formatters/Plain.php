@@ -34,11 +34,11 @@ function iteration(array $diffNode, string $actualPath)
     $status = $diffNode['status'];
 
     switch ($status) {
-        case 'equal':
-            $identialValue = $diffNode['identialValue'];
-            if (is_array($identialValue)) {
-                return array_map(fn($childNode) => iteration($childNode, $propertyPath), $identialValue);
-            }
+        case 'bothValuesAreArrays':
+            $arrayValue = $diffNode['arrayValue'];
+            return array_map(fn($childNode) => iteration($childNode, $propertyPath), $arrayValue);
+
+        case 'identialValues':
             return '';
 
         case 'updated':
