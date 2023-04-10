@@ -34,11 +34,11 @@ function iteration(array $diffNode, string $actualPath)
     $status = $diffNode['status'];
 
     switch ($status) {
-        case 'bothValuesAreArrays':
+        case 'nested':
             $arrayValue = $diffNode['arrayValue'];
             return array_map(fn($childNode) => iteration($childNode, $propertyPath), $arrayValue);
 
-        case 'identialValues':
+        case 'equal':
             return '';
 
         case 'updated':
@@ -55,6 +55,6 @@ function iteration(array $diffNode, string $actualPath)
             return "Property '{$propertyPath}' was removed";
 
         default:
-            return "Error: there is no status with the such name.";
+            throw new \Exception("There is no status with the such name.");
     }
 }

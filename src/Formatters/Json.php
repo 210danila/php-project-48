@@ -21,14 +21,14 @@ function createJsonNode(string $status, array $values)
         case 'updated':
             return ["status" => $status, 'removedValue' => $values['removed'], 'addedValue' => $values['added']];
 
-        case 'bothValuesAreArrays':
+        case 'nested':
             return ["status" => $status, 'arrayValue' => $values['arrayValue']];
 
-        case 'identialValues':
+        case 'equal':
             return ["status" => $status, 'identialValue' => $values['identialValue']];
 
         default:
-            return "Error: there is no status with the such name.";
+            throw new \Exception("There is no status with the such name.");
     }
 }
 
@@ -45,9 +45,9 @@ function iteration(array $diffNode)
 {
     $status = $diffNode['status'];
 
-    if ($status === "bothValuesAreArrays") {
+    if ($status === "nested") {
         return [
-            'status' => 'bothValuesAreArrays',
+            'status' => 'nested',
             'arrayValue' => handleArrayValue($diffNode['arrayValue'])
         ];
     }

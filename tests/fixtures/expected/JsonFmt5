@@ -1,13 +1,13 @@
 {
     "common": {
-        "status": "bothValuesAreArrays",
+        "status": "nested",
         "arrayValue": {
             "follow": {
                 "status": "added",
                 "addedValue": false
             },
             "setting1": {
-                "status": "identialValues",
+                "status": "equal",
                 "identialValue": "Value 1"
             },
             "setting2": {
@@ -30,10 +30,10 @@
                 }
             },
             "setting6": {
-                "status": "bothValuesAreArrays",
+                "status": "nested",
                 "arrayValue": {
                     "doge": {
-                        "status": "bothValuesAreArrays",
+                        "status": "nested",
                         "arrayValue": {
                             "wow": {
                                 "status": "updated",
@@ -43,7 +43,7 @@
                         }
                     },
                     "key": {
-                        "status": "identialValues",
+                        "status": "equal",
                         "identialValue": "value"
                     },
                     "ops": {
@@ -55,7 +55,7 @@
         }
     },
     "group1": {
-        "status": "bothValuesAreArrays",
+        "status": "nested",
         "arrayValue": {
             "baz": {
                 "status": "updated",
@@ -63,7 +63,7 @@
                 "addedValue": "bars"
             },
             "foo": {
-                "status": "identialValues",
+                "status": "equal",
                 "identialValue": "bar"
             },
             "nest": {

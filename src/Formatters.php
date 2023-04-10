@@ -12,6 +12,6 @@ function formatDiffTree(array $diffTree, string $formatName)
         case 'json':
             return \Differ\Formatters\Json\createOutput($diffTree);
         default:
-            return "Error: There is no format called {$formatName}.";
+            throw new \Exception("There is no format called {$formatName}.");
     }
 }

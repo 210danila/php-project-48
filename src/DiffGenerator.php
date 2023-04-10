@@ -20,14 +20,14 @@ function handleBothElements(string $property, mixed $beforeValue, mixed $afterVa
         return [
             'property' => $property,
             'depth' => $depth,
-            'status' => 'bothValuesAreArrays',
+            'status' => 'nested',
             'arrayValue' => iteration($beforeValue, $afterValue, $depth + 1)
         ];
     } elseif (!$isBeforeValueArray && !$isAfterValueArray && $beforeValue === $afterValue) {
         return [
             'property' => $property,
             'depth' => $depth,
-            'status' => 'identialValues',
+            'status' => 'equal',
             'identialValue' => $beforeValue
         ];
     } else {

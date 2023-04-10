@@ -11,24 +11,24 @@ class DifferTest extends TestCase
     public function stylishFmtFilesProvider()
     {
         return [
-            [1, 'json'],
-            [2, 'yml'],
-            [3, 'json'],
-            [4, 'yml'],
-            [5, 'json'],
-            [6, 'yml'],
-            [7, 'json'],
-            [8, 'yml']
+            ['After1.json', 'Before1.json', 'expected/StylishFmt1'],
+            ['After2.yml', 'Before2.yml', 'expected/StylishFmt2'],
+            ['After3.json', 'Before3.json', 'expected/StylishFmt3'],
+            ['After4.yml', 'Before4.yml', 'expected/StylishFmt4'],
+            ['After5.json', 'Before5.json', 'expected/StylishFmt5'],
+            ['After6.yml', 'Before6.yml', 'expected/StylishFmt6'],
+            ['After7.json', 'Before7.json', 'expected/StylishFmt7'],
+            ['After8.yml', 'Before8.yml', 'expected/StylishFmt8']
         ];
     }
 
     public function plainFmtFilesProvider()
     {
         return [
-            [5, 'json'],
-            [6, 'yml'],
-            [7, 'json'],
-            [8, 'yml']
+            ['After5.json', 'Before5.json', 'expected/PlainFmt5'],
+            ['After6.yml', 'Before6.yml', 'expected/PlainFmt6'],
+            ['After7.json', 'Before7.json', 'expected/PlainFmt7'],
+            ['After8.yml', 'Before8.yml', 'expected/PlainFmt8']
         ];
     }
 
@@ -37,20 +37,15 @@ class DifferTest extends TestCase
         return __DIR__ . "/fixtures/{$fixtureName}";
     }
 
-    public function getExpectedFixturePath(string $fixtureName)
-    {
-        return __DIR__ . "/fixtures/expected/{$fixtureName}";
-    }
-
     /**
      * @dataProvider stylishFmtFilesProvider
      */
-    public function testGenDiffWithStylishFormat($fileNumber, $extension): void
+    public function testGenDiffWithStylishFormat($afterFilePath, $beforeFilePath, $expectedFilePath): void
     {
         $format = "stylish";
-        $expectedFilePath = $this->getExpectedFixturePath("StylishFmt{$fileNumber}");
-        $beforeFilePath = $this->getFixturePath("Before{$fileNumber}.{$extension}");
-        $afterFilePath = $this->getFixturePath("After{$fileNumber}.{$extension}");
+        $expectedFilePath = $this->getFixturePath($expectedFilePath);
+        $beforeFilePath = $this->getFixturePath($beforeFilePath);
+        $afterFilePath = $this->getFixturePath($afterFilePath);
 
         $actual = genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertStringEqualsFile($expectedFilePath, $actual);
@@ -59,12 +54,12 @@ class DifferTest extends TestCase
     /**
      * @dataProvider plainFmtFilesProvider
      */
-    public function testGenDiffWithPlainFormat($fileNumber, $extension): void
+    public function testGenDiffWithPlainFormat($afterFilePath, $beforeFilePath, $expectedFilePath): void
     {
         $format = 'plain';
-        $expectedFilePath = $this->getExpectedFixturePath("PlainFmt{$fileNumber}");
-        $beforeFilePath = $this->getFixturePath("Before{$fileNumber}.{$extension}");
-        $afterFilePath = $this->getFixturePath("After{$fileNumber}.{$extension}");
+        $expectedFilePath = $this->getFixturePath($expectedFilePath);
+        $beforeFilePath = $this->getFixturePath($beforeFilePath);
+        $afterFilePath = $this->getFixturePath($afterFilePath);
 
         $actual = genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertStringEqualsFile($expectedFilePath, $actual);
@@ -73,7 +68,7 @@ class DifferTest extends TestCase
     public function testGenDiffWithJsonFormat(): void
     {
         $format = 'json';
-        $expectedFilePath = $this->getExpectedFixturePath("JsonFmt5");
+        $expectedFilePath = $this->getFixturePath("expected/JsonFmt5");
         $beforeFilePath = $this->getFixturePath("Before5.json");
         $afterFilePath = $this->getFixturePath("After5.json");
 

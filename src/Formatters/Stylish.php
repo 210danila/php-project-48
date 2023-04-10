@@ -64,7 +64,7 @@ function handleRemovedOrAddedValue(mixed $value, string $property, int $depth, s
     return "{$prefix}  {$sign} {$property}: {$stylishedValue}";
 }
 
-function handleIdentialValues(mixed $value, string $property, int $depth)
+function handleEqualValues(mixed $value, string $property, int $depth)
 {
     $prefix = createPrefix($depth);
 
@@ -90,10 +90,10 @@ function iteration(array $diffNode)
     $status = $diffNode['status'];
 
     switch ($status) {
-        case 'identialValues':
-            return handleIdentialValues($diffNode['identialValue'], $property, $depth);
+        case 'equal':
+            return handleEqualValues($diffNode['identialValue'], $property, $depth);
 
-        case 'bothValuesAreArrays':
+        case 'nested':
             return handleArrayValue($diffNode['arrayValue'], $property, $depth);
 
         case 'updated':
@@ -107,6 +107,6 @@ function iteration(array $diffNode)
             return handleRemovedOrAddedValue($diffNode['removedValue'], $property, $depth, '-');
 
         default:
-            return "Error: there is no status with the such name.";
+            throw new \Exception("There is no status with the such name.");
     }
 }
