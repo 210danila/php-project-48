@@ -66,17 +66,16 @@ function handleElement(array $elements, int $depth)
         $values = ['beforeValue' => $beforeValue, 'afterValue' => $afterValue];
 
         if (!array_key_exists($property, $beforeElement)) {
-            $status = 'added';
+            return generateDiffNode('added', $property, $depth, $values);
         } elseif (!array_key_exists($property, $afterElement)) {
-            $status = 'removed';
+            return generateDiffNode('removed', $property, $depth, $values);
         } elseif (is_array($beforeValue) && is_array($afterValue)) {
-            $status = 'nested';
+            return generateDiffNode('nested', $property, $depth, $values);
         } elseif ($beforeValue === $afterValue) {
-            $status = 'equal';
+            return generateDiffNode('equal', $property, $depth, $values);
         } elseif ($beforeValue !== $afterValue) {
-            $status = 'updated';
+            return generateDiffNode('updated', $property, $depth, $values);
         }
-        return generateDiffNode($status, $property, $depth, $values);
     }, $mergedKeys);
 }
 
