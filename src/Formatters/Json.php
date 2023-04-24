@@ -5,8 +5,7 @@ namespace Differ\Formatters\Json;
 function createOutput(array $diffTree)
 {
     $rootChildren = $diffTree['children'];
-    $jsonTree = json_encode(handleArrayValue($rootChildren));
-    return $jsonTree;
+    return json_encode(['root' => handleArrayValue($rootChildren)]);
 }
 
 function createJsonNode(string $status, array $values)

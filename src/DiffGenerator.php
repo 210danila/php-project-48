@@ -6,78 +6,89 @@ function generateDiffTree(array $diffData1, array $diffData2)
 {
     $diffTree = [
         'status' => 'root',
-        'depth' => 0,
         'children' => iteration($diffData1, $diffData2, 1)
     ];
     return $diffTree;
 }
 
-function handleBothElements(string $property, mixed $beforeValue, mixed $afterValue, int $depth)
+function generateDiffNode($status, $property, $depth, $values)
 {
-    [$isBeforeValueArray, $isAfterValueArray] = [is_array($beforeValue), is_array($afterValue)];
+    [$beforeValue, $afterValue] = [$values['beforeValue'], $values['afterValue']];
 
-    if ($isBeforeValueArray && $isAfterValueArray) {
-        return [
-            'property' => $property,
-            'depth' => $depth,
-            'status' => 'nested',
-            'arrayValue' => iteration($beforeValue, $afterValue, $depth + 1)
-        ];
-    } elseif (!$isBeforeValueArray && !$isAfterValueArray && $beforeValue === $afterValue) {
-        return [
-            'property' => $property,
-            'depth' => $depth,
-            'status' => 'equal',
-            'identialValue' => $beforeValue
-        ];
-    } else {
-        return [
-            'property' => $property,
-            'depth' => $depth,
-            'status' => 'updated',
-            'removedValue' => $beforeValue,
-            'addedValue' => $afterValue
-        ];
+    switch ($status) {
+        case 'nested':
+            return [
+                'property' => $property,
+                'depth' => $depth,
+                'status' => 'nested',
+                'arrayValue' => iteration($beforeValue, $afterValue, $depth + 1)
+            ];
+        case 'equal':
+            return [
+                'property' => $property,
+                'depth' => $depth,
+                'status' => 'equal',
+                'identialValue' => $beforeValue
+            ];
+        case 'updated':
+            return [
+                'property' => $property,
+                'depth' => $depth,
+                'status' => 'updated',
+                'removedValue' => $beforeValue,
+                'addedValue' => $afterValue
+            ];
+        case 'removed':
+            return [
+                'property' => $property,
+                'depth' => $depth,
+                'status' => 'removed',
+                'removedValue' => $beforeValue
+            ];
+        case 'added':
+            return  [
+                'property' => $property,
+                'depth' => $depth,
+                'status' => 'added',
+                'addedValue' => $afterValue
+            ];
+        default:
+            return 'No such status.';
     }
 }
 
-function handleBeforeElement(string $property, mixed $beforeValue, int $depth)
+function handleElement($elements, $depth)
 {
-    return [
-        'property' => $property,
-        'depth' => $depth,
-        'status' => 'removed',
-        'removedValue' => $beforeValue
-    ];
-}
+    [$beforeElement, $afterElement, $mergedKeys] = $elements;
+    return array_map(function ($property) use ($beforeElement, $afterElement, $depth) {
+        $status = '';
+        $beforeValue = $beforeElement[$property] ?? null;
+        $afterValue = $afterElement[$property] ?? null;
+        $values = ['beforeValue' => $beforeValue, 'afterValue' => $afterValue];
 
-function handleAfterElement(string $property, mixed $afterValue, int $depth)
-{
-    return  [
-        'property' => $property,
-        'depth' => $depth,
-        'status' => 'added',
-        'addedValue' => $afterValue
-    ];
+        if (!array_key_exists($property, $beforeElement)) {
+            $status = 'added';
+        } elseif (!array_key_exists($property, $afterElement)) {
+            $status = 'removed';
+        } elseif (is_array($beforeValue) && is_array($afterValue)) {
+            $status = 'nested';
+        } elseif ($beforeValue === $afterValue) {
+            $status = 'equal';
+        } elseif ($beforeValue !== $afterValue) {
+            $status = 'updated';
+        }
+        return generateDiffNode($status, $property, $depth, $values);
+    }, $mergedKeys);
 }
 
 function iteration(array $beforeElement, array $afterElement, int $depth = 1)
 {
     $mergedDataKeys = array_keys(array_merge($beforeElement, $afterElement));
     $sortedMergedDataKeys = collect($mergedDataKeys)->sort()->toArray();
-
-    $resultElement = array_map(function ($property) use ($beforeElement, $afterElement, $depth) {
-        if (array_key_exists($property, $beforeElement) && array_key_exists($property, $afterElement)) {
-            $beforeValue = $beforeElement[$property];
-            $afterValue = $afterElement[$property];
-            return handleBothElements($property, $beforeValue, $afterValue, $depth);
-        } elseif (array_key_exists($property, $beforeElement)) {
-            $beforeValue = $beforeElement[$property];
-            return handleBeforeElement($property, $beforeValue, $depth);
-        } else {
-            $afterValue = $afterElement[$property];
-            return handleAfterElement($property, $afterValue, $depth);
-        }
-    }, $sortedMergedDataKeys);
-    return $resultElement;
+    $elements = [
+        $beforeElement,
+        $afterElement,
+        $sortedMergedDataKeys
+    ];
+    return handleElement($elements, $depth);
 }
