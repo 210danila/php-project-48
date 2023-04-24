@@ -11,7 +11,7 @@ function generateDiffTree(array $diffData1, array $diffData2)
     return $diffTree;
 }
 
-function generateDiffNode($status, $property, $depth, $values)
+function generateDiffNode(string $status, string $property, int $depth, array $values)
 {
     [$beforeValue, $afterValue] = [$values['beforeValue'], $values['afterValue']];
 
@@ -57,11 +57,10 @@ function generateDiffNode($status, $property, $depth, $values)
     }
 }
 
-function handleElement($elements, $depth)
+function handleElement(array $elements, int $depth)
 {
     [$beforeElement, $afterElement, $mergedKeys] = $elements;
     return array_map(function ($property) use ($beforeElement, $afterElement, $depth) {
-        $status = '';
         $beforeValue = $beforeElement[$property] ?? null;
         $afterValue = $afterElement[$property] ?? null;
         $values = ['beforeValue' => $beforeValue, 'afterValue' => $afterValue];
