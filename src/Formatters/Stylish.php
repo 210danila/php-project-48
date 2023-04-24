@@ -46,7 +46,7 @@ function formatValue(mixed $value)
     return $value;
 }
 
-function stringifyDiffNode($prefix, $property, $value): string
+function stringifyDiffNode(string $prefix, string $property, string $value)
 {
     return "{$prefix}{$property}: {$value}";
 }
