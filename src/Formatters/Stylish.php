@@ -14,25 +14,24 @@ function createOutput(array $diffTree)
     return "{\n" . implode("\n", $stylishedRootChildren) . "\n}";
 }
 
-function stylishArray(array $array, int $depth)
+function stringifyArray(array $array, int $depth)
 {
     $sortedArray = collect($array)->sortKeys()->toArray();
 
-    $stylishedArray = collect(array_keys($sortedArray))
+    return collect(array_keys($sortedArray))
         ->map(function ($key) use ($sortedArray, $depth) {
             $value = $sortedArray[$key];
             $prefix = str_repeat(INDENT, $depth);
 
             if (is_array($value)) {
-                $stylishedValue = stylishArray($value, $depth + 1);
-                return "{$prefix}{$key}: {\n{$stylishedValue}\n{$prefix}}";
+                $formattedValue = stringifyArray($value, $depth + 1);
+                return "{$prefix}{$key}: {\n{$formattedValue}\n{$prefix}}";
             }
 
-            $stylishedValue = formatValue($value);
-            return "{$prefix}{$key}: {$stylishedValue}";
+            $formattedValue = formatValue($value);
+            return "{$prefix}{$key}: {$formattedValue}";
         })
         ->implode("\n");
-    return $stylishedArray;
 }
 
 function formatValue(mixed $value)
@@ -46,9 +45,35 @@ function formatValue(mixed $value)
     return $value;
 }
 
-function stringifyDiffNode(string $prefix, string $property, string $value)
+function stringifyDiffNode(string $property, mixed $value, int $depth, string $prefixType)
 {
-    return "{$prefix}{$property}: {$value}";
+    switch ($prefixType) {
+        case 'nested':
+            $prefix = str_repeat(INDENT, $depth);
+            $formattedValue = collect($value)
+                ->map(fn($child) => iteration($child))
+                ->implode("\n");
+            return "{$prefix}{$property}: {\n{$formattedValue}\n{$prefix}}";
+
+        case 'equal':
+            $prefix = str_repeat(INDENT, $depth);
+            $formattedValue = formatValue($value);
+            return "{$prefix}{$property}: {$formattedValue}";
+
+        case 'removed':
+        case 'added':
+            $sign = $prefixType === 'added' ? '+' : '-';
+            $prefix = str_repeat(INDENT, $depth - 1);
+            if (is_array($value)) {
+                $formattedValue = stringifyArray($value, $depth + 1);
+                return "{$prefix}  {$sign} {$property}: {\n{$formattedValue}\n{$prefix}    }";
+            }
+            $formattedValue = formatValue($value);
+            return "{$prefix}  {$sign} {$property}: {$formattedValue}";
+
+        default:
+            throw new \Exception("No such prefix type {$prefixType}.");
+    }
 }
 
 function iteration(array $diffNode)
@@ -56,41 +81,23 @@ function iteration(array $diffNode)
     $property = $diffNode['property'];
     $depth = $diffNode['depth'];
     $status = $diffNode['status'];
-    [$shortPrefix, $fullPrefix] = [str_repeat(INDENT, $depth - 1), str_repeat(INDENT, $depth)];
-
-    $stylishValue = function ($value, $depth, $prefix) {
-        if (is_array($value)) {
-            $handledValue = stylishArray($value, $depth + 1);
-            return "{\n{$handledValue}\n{$prefix}    }";
-        }
-        return formatValue($value);
-    };
 
     switch ($status) {
         case 'nested':
-            $stylishedValue = implode("\n", array_map(
-                fn($child) => iteration($child),
-                $diffNode['arrayValue']
-            ));
-            return stringifyDiffNode($fullPrefix, $property, "{\n{$stylishedValue}\n{$fullPrefix}}");
+            return stringifyDiffNode($property, $diffNode['arrayValue'], $depth, 'nested');
 
         case 'equal':
-            $value = $diffNode['identialValue'];
-            return stringifyDiffNode($fullPrefix, $property, formatValue($value));
+            return stringifyDiffNode($property, $diffNode['identialValue'], $depth, 'equal');
 
         case 'updated':
-            $stylishedRemovedValue = $stylishValue($diffNode['removedValue'], $depth, $shortPrefix);
-            $stylishedAddedValue = $stylishValue($diffNode['addedValue'], $depth, $shortPrefix);
-            return stringifyDiffNode("{$shortPrefix}  - ", $property, $stylishedRemovedValue) . "\n" .
-                stringifyDiffNode("{$shortPrefix}  + ", $property, $stylishedAddedValue);
+            return stringifyDiffNode($property, $diffNode['removedValue'], $depth, 'removed') . "\n" .
+                stringifyDiffNode($property, $diffNode['addedValue'], $depth, 'added');
 
         case 'added':
-            $stylishedAddedValue = $stylishValue($diffNode['addedValue'], $depth, $shortPrefix);
-            return stringifyDiffNode("{$shortPrefix}  + ", $property, $stylishedAddedValue);
+            return stringifyDiffNode($property, $diffNode['addedValue'], $depth, 'added');
 
         case 'removed':
-            $stylishedAddedValue = $stylishValue($diffNode['removedValue'], $depth, $shortPrefix);
-            return stringifyDiffNode("{$shortPrefix}  - ", $property, $stylishedAddedValue);
+            return stringifyDiffNode($property, $diffNode['removedValue'], $depth, 'removed');
 
         default:
             throw new \Exception("There is no status with the such name.");

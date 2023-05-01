@@ -32,6 +32,13 @@ class DifferTest extends TestCase
         ];
     }
 
+    public function jsonFmtFilesProvider()
+    {
+        return[
+            ['After5.json', 'Before5.json', 'expected/JsonFmt5']
+        ];
+    }
+
     public function getFixturePath(string $fixtureName)
     {
         return __DIR__ . "/fixtures/{$fixtureName}";
@@ -65,12 +72,15 @@ class DifferTest extends TestCase
         $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
-    public function testGenDiffWithJsonFormat(): void
+    /**
+     * @dataProvider jsonFmtFilesProvider
+     */
+    public function testGenDiffWithJsonFormat($afterFilePath, $beforeFilePath, $expectedFilePath): void
     {
         $format = 'json';
-        $expectedFilePath = $this->getFixturePath("expected/JsonFmt5");
-        $beforeFilePath = $this->getFixturePath("Before5.json");
-        $afterFilePath = $this->getFixturePath("After5.json");
+        $expectedFilePath = $this->getFixturePath($expectedFilePath);
+        $beforeFilePath = $this->getFixturePath($beforeFilePath);
+        $afterFilePath = $this->getFixturePath($afterFilePath);
 
         $expected = implode(array_map(fn($line) => ltrim($line), file($expectedFilePath)));
         $actual = genDiff($beforeFilePath, $afterFilePath, $format);

@@ -1,5 +1,6 @@
 {
-    "root": {
+    "status": "root",
+    "children": {
         "common": {
             "status": "nested",
             "arrayValue": {
