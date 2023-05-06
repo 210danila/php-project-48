@@ -53,7 +53,7 @@ function generateDiffNode(string $status, string $property, int $depth, array $v
                 'addedValue' => $afterValue
             ];
         default:
-            return 'No such status.';
+            throw new \Exception('No such status.');
     }
 }
 
@@ -75,6 +75,8 @@ function handleElement(array $elements, int $depth)
             return generateDiffNode('equal', $property, $depth, $values);
         } elseif ($beforeValue !== $afterValue) {
             return generateDiffNode('updated', $property, $depth, $values);
+        } else {
+            throw new \Exception('No status found for this values.');
         }
     }, $mergedKeys);
 }

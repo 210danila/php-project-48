@@ -83,6 +83,10 @@ class DifferTest extends TestCase
         $afterFilePath = $this->getFixturePath($afterFilePath);
 
         $expected = implode(array_map(fn($line) => ltrim($line), file($expectedFilePath)));
+        $expectedFileLines = file($expectedFilePath);
+        $expected = array_reduce($expectedFileLines, function ($resultString, $line) {
+            return $resultString . $line;
+        }, '');
         $actual = genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertEquals(json_decode($expected, true), json_decode($actual, true));
     }

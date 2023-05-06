@@ -3,6 +3,12 @@
 namespace Differ\Formatters\Stylish;
 
 const INDENT = '    ';
+const VALUE_TYPES = [
+    'nested' => 'arrayValue',
+    'equal' => 'identialValue',
+    'added' => 'addedValue',
+    'removed' => 'removedValue'
+];
 
 function createOutput(array $diffTree)
 {
@@ -82,24 +88,13 @@ function iteration(array $diffNode)
     $depth = $diffNode['depth'];
     $status = $diffNode['status'];
 
-    switch ($status) {
-        case 'nested':
-            return stringifyDiffNode($property, $diffNode['arrayValue'], $depth, 'nested');
-
-        case 'equal':
-            return stringifyDiffNode($property, $diffNode['identialValue'], $depth, 'equal');
-
-        case 'updated':
-            return stringifyDiffNode($property, $diffNode['removedValue'], $depth, 'removed') . "\n" .
-                stringifyDiffNode($property, $diffNode['addedValue'], $depth, 'added');
-
-        case 'added':
-            return stringifyDiffNode($property, $diffNode['addedValue'], $depth, 'added');
-
-        case 'removed':
-            return stringifyDiffNode($property, $diffNode['removedValue'], $depth, 'removed');
-
-        default:
-            throw new \Exception("There is no status with the such name.");
+    if ($status === 'updated') {
+        return stringifyDiffNode($property, $diffNode['removedValue'], $depth, 'removed') . "\n" .
+            stringifyDiffNode($property, $diffNode['addedValue'], $depth, 'added');
     }
+    if (!array_key_exists($status, VALUE_TYPES)) {
+        throw new \Exception("There is no status with the such name.");
+    }
+    $valueType = VALUE_TYPES[$status];
+    return stringifyDiffNode($property, $diffNode[$valueType], $depth, $status);
 }
