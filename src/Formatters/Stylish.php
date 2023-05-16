@@ -12,7 +12,7 @@ function createOutput(array $diffTree)
     return "{\n" . implode("\n", $stylishedRootChildren) . "\n}";
 }
 
-function createPrefix(string $depth)
+function createPrefix(int $depth)
 {
     return str_repeat('    ', $depth);
 }
