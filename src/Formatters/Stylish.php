@@ -12,7 +12,7 @@ function createOutput(array $diffTree)
     return "{\n" . implode("\n", $stylishedRootChildren) . "\n}";
 }
 
-function createPrefix($depth)
+function createPrefix(string $depth)
 {
     return str_repeat('    ', $depth);
 }
@@ -59,7 +59,7 @@ function formatValue(mixed $value, int $depth = null)
 function stringifyDiffNode(array $diffNode)
 {
     ['property' => $property, 'depth' => $depth, 'status' => $status] = $diffNode;
-    $prefix = in_array($status, ['nested', 'equal']) ?
+    $prefix = in_array($status, ['nested', 'equal'], true) ?
         createPrefix($depth) : createPrefix($depth - 1);
 
     switch ($status) {
