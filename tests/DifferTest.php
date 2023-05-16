@@ -35,7 +35,7 @@ class DifferTest extends TestCase
     public function jsonFmtFilesProvider()
     {
         return[
-            ['After5.json', 'Before5.json', 'expected/JsonFmt5']
+            ['After5.json', 'Before5.json', 'expected/JsonFmt5.json']
         ];
     }
 
@@ -82,11 +82,7 @@ class DifferTest extends TestCase
         $beforeFilePath = $this->getFixturePath($beforeFilePath);
         $afterFilePath = $this->getFixturePath($afterFilePath);
 
-        $expected = implode(array_map(fn($line) => ltrim($line), file($expectedFilePath)));
-        $expectedFileLines = file($expectedFilePath);
-        $expected = array_reduce($expectedFileLines, function ($resultString, $line) {
-            return $resultString . $line;
-        }, '');
+        $expected = file_get_contents($expectedFilePath);
         $actual = genDiff($beforeFilePath, $afterFilePath, $format);
         $this->assertEquals(json_decode($expected, true), json_decode($actual, true));
     }

@@ -2,22 +2,19 @@
 
 namespace Differ\Formatters\Stylish;
 
-const INDENT = '    ';
-const VALUE_TYPES = [
-    'nested' => 'arrayValue',
-    'equal' => 'identialValue',
-    'added' => 'addedValue',
-    'removed' => 'removedValue'
-];
-
 function createOutput(array $diffTree)
 {
     $rootChildren = $diffTree['children'];
     $stylishedRootChildren = array_map(
-        fn($rootChild) => iteration($rootChild),
+        fn($rootChild) => stringifyDiffNode($rootChild),
         $rootChildren
     );
     return "{\n" . implode("\n", $stylishedRootChildren) . "\n}";
+}
+
+function createPrefix($depth)
+{
+    return str_repeat('    ', $depth);
 }
 
 function stringifyArray(array $array, int $depth)
@@ -27,7 +24,7 @@ function stringifyArray(array $array, int $depth)
     return collect(array_keys($sortedArray))
         ->map(function ($key) use ($sortedArray, $depth) {
             $value = $sortedArray[$key];
-            $prefix = str_repeat(INDENT, $depth);
+            $prefix = createPrefix($depth);
 
             if (is_array($value)) {
                 $formattedValue = stringifyArray($value, $depth + 1);
@@ -40,7 +37,7 @@ function stringifyArray(array $array, int $depth)
         ->implode("\n");
 }
 
-function formatValue(mixed $value)
+function formatValue(mixed $value, int $depth = null)
 {
     if (is_bool($value)) {
         return $value ? "true" : "false";
@@ -48,53 +45,48 @@ function formatValue(mixed $value)
     if (is_null($value)) {
         return 'null';
     }
+    if (is_array($value)) {
+        if (is_null($depth)) {
+            throw new \Exception('$depth parameter is required.');
+        }
+        $stringifiedArray = stringifyArray($value, $depth + 1);
+        $prefix = createPrefix($depth);
+        return "{\n{$stringifiedArray}\n{$prefix}}";
+    }
     return $value;
 }
 
-function stringifyDiffNode(string $property, mixed $value, int $depth, string $prefixType)
+function stringifyDiffNode(array $diffNode)
 {
-    switch ($prefixType) {
+    ['property' => $property, 'depth' => $depth, 'status' => $status] = $diffNode;
+    $prefix = in_array($status, ['nested', 'equal']) ?
+        createPrefix($depth) : createPrefix($depth - 1);
+
+    switch ($status) {
         case 'nested':
-            $prefix = str_repeat(INDENT, $depth);
-            $formattedValue = collect($value)
-                ->map(fn($child) => iteration($child))
+            $formattedValue = collect($diffNode['arrayValue'])
+                ->map(fn($child) => stringifyDiffNode($child))
                 ->implode("\n");
             return "{$prefix}{$property}: {\n{$formattedValue}\n{$prefix}}";
 
         case 'equal':
-            $prefix = str_repeat(INDENT, $depth);
-            $formattedValue = formatValue($value);
+            $formattedValue = formatValue($diffNode['identialValue']);
             return "{$prefix}{$property}: {$formattedValue}";
+
+        case 'updated':
+            $formattedRemovedValue = formatValue($diffNode['removedValue'], $depth);
+            $formattedAddedValue = formatValue($diffNode['addedValue'], $depth);
+            return "{$prefix}  - {$property}: {$formattedRemovedValue}" . "\n" .
+                "{$prefix}  + {$property}: {$formattedAddedValue}";
 
         case 'removed':
         case 'added':
-            $sign = $prefixType === 'added' ? '+' : '-';
-            $prefix = str_repeat(INDENT, $depth - 1);
-            if (is_array($value)) {
-                $formattedValue = stringifyArray($value, $depth + 1);
-                return "{$prefix}  {$sign} {$property}: {\n{$formattedValue}\n{$prefix}    }";
-            }
-            $formattedValue = formatValue($value);
+            $sign = $status === 'added' ? '+' : '-';
+            $value = $diffNode["{$status}Value"];
+            $formattedValue = formatValue($value, $depth);
             return "{$prefix}  {$sign} {$property}: {$formattedValue}";
 
         default:
-            throw new \Exception("No such prefix type {$prefixType}.");
+            throw new \Exception("No such status {$status}.");
     }
-}
-
-function iteration(array $diffNode)
-{
-    $property = $diffNode['property'];
-    $depth = $diffNode['depth'];
-    $status = $diffNode['status'];
-
-    if ($status === 'updated') {
-        return stringifyDiffNode($property, $diffNode['removedValue'], $depth, 'removed') . "\n" .
-            stringifyDiffNode($property, $diffNode['addedValue'], $depth, 'added');
-    }
-    if (!array_key_exists($status, VALUE_TYPES)) {
-        throw new \Exception("There is no status with the such name.");
-    }
-    $valueType = VALUE_TYPES[$status];
-    return stringifyDiffNode($property, $diffNode[$valueType], $depth, $status);
 }
